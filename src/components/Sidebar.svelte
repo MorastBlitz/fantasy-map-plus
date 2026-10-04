@@ -87,6 +87,14 @@
           <span use:icon={"link"}></span>
           Relation
         </button>
+        <button
+          class="fantasy-map-btn"
+          aria-label="Copy a link to this feature for use in notes"
+          onclick={() => selected?.onCopyLink()}
+        >
+          <span use:icon={"copy"}></span>
+          Copy link
+        </button>
       </div>
       {#if selected.onOpenLocalMap}
         <button

@@ -6,6 +6,7 @@ import type {
   MapScaleSchema,
   FantasyMapSettingsSchema,
   LayerConfigSchema,
+  LinkStyleSchema,
 } from "./schemas";
 import type { App, MetadataCache } from "obsidian";
 
@@ -17,6 +18,10 @@ export interface ObsidianInternalPlugin {
 }
 
 export interface ObsidianApp extends App {
+  setting?: {
+    open(): void;
+    openTabById(id: string): void;
+  };
   internalPlugins?: {
     getPluginById?: (id: string) => ObsidianInternalPlugin | undefined;
   };
@@ -30,9 +35,12 @@ export type LayerConfig = v.InferOutput<typeof LayerConfigSchema>;
 export type MapConfig = v.InferOutput<typeof MapConfigSchema>;
 export type MapScale = v.InferOutput<typeof MapScaleSchema>;
 export type FantasyMapSettings = v.InferOutput<typeof FantasyMapSettingsSchema>;
+export type LinkStyle = v.InferOutput<typeof LinkStyleSchema>;
 
 export const DEFAULT_SETTINGS: FantasyMapSettings = {
   maps: [],
+  linkStyle: "ask",
+  previewHeight: 300,
 };
 
 export interface FeatureRelation {
@@ -95,6 +103,7 @@ export interface SidebarState {
   onAddRelation: () => void;
   onRemoveRelation: (featureId: string) => void;
   onSelectFeature: (featureId: string) => void;
+  onCopyLink: () => void;
   onOpenLocalMap?: () => void;
   onLinkLocalMap?: () => void;
   relations?: { featureId: string; featureName: string; label: string }[];

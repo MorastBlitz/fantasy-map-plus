@@ -42,14 +42,18 @@ interface MapHandlers {
 interface MapControllers {
   featureCtrl: FeatureController;
   layerMgr: LayerManager;
+  sidebarBuilder: SidebarStateBuilder;
 }
 
 export class FantasyMapView extends ItemView {
   plugin: FantasyMapPlugin;
   mapId: string | null = null;
+  /** Feature to select once the map has loaded (set via deep links). */
+  private focusFeatureId: string | null = null;
   mapContainerEl: HTMLDivElement | null = null;
 
   private map: L.Map | null = null;
+  private selectById: ((featureId: string) => void) | null = null;
   private layers: LoadedLayer[] = [];
   private selection: SelectionManager | null = null;
   private sidebarEl: HTMLDivElement | null = null;
@@ -84,6 +88,8 @@ export class FantasyMapView extends ItemView {
     if (s && typeof s.mapId === "string") {
       this.mapId = s.mapId;
     }
+    this.focusFeatureId =
+      s && typeof s.featureId === "string" ? s.featureId : null;
     await super.setState(state, result as Parameters<ItemView["setState"]>[1]);
     await this.renderMap();
   }
@@ -212,6 +218,7 @@ export class FantasyMapView extends ItemView {
     this.scaleBar?.dispose();
     this.scaleBar = null;
     this.selection = null;
+    this.selectById = null;
     this.updateSidebar = null;
     this.sidebarEl = null;
     this.mapContainerEl = null;
@@ -247,6 +254,52 @@ export class FantasyMapView extends ItemView {
     this.wireMapEvents(map, handlers, controllers.featureCtrl);
 
     controllers.layerMgr.loadAndDisplay();
+
+    this.selectById = (id) => controllers.sidebarBuilder.selectById(id);
+    if (this.focusFeatureId) this.selectById(this.focusFeatureId);
+
+    this.fitWhenFirstVisible(map, this.mapContainerEl, dimensions);
+  }
+
+  /** Whether this view currently shows the given map, fully loaded. */
+  isShowing(mapId: string): boolean {
+    return this.mapId === mapId && this.map !== null;
+  }
+
+  /** Select and pan to a feature on the already loaded map. */
+  focusFeature(featureId: string): void {
+    this.focusFeatureId = featureId;
+    this.selectById?.(featureId);
+  }
+
+  /**
+   * Leaflet measures its container on init. If the view was hidden then
+   * (e.g. a background tab), the size is 0 and the map ends up tiny in the
+   * corner — so fit once the container first becomes visible. Later
+   * resizes only invalidate the size to keep the user's zoom.
+   */
+  private fitWhenFirstVisible(
+    map: L.Map,
+    container: HTMLElement,
+    dimensions: ImageDimensions,
+  ): void {
+    const isVisible = (): boolean =>
+      container.clientWidth > 0 && container.clientHeight > 0;
+    let fitted = isVisible();
+
+    const observer = new ResizeObserver(() => {
+      if (!isVisible()) return;
+      map.invalidateSize();
+      if (fitted) return;
+      fitted = true;
+      map.fitBounds([
+        [0, 0],
+        [dimensions.height, dimensions.width],
+      ]);
+      if (this.focusFeatureId) this.selectById?.(this.focusFeatureId);
+    });
+    observer.observe(container);
+    this.disposables.add(() => observer.disconnect());
   }
 
   private createLeafletMap(
@@ -349,7 +402,7 @@ export class FantasyMapView extends ItemView {
       this,
     );
     layerMgr = new LayerManager(ctx, sidebarBuilder);
-    return { featureCtrl, layerMgr };
+    return { featureCtrl, layerMgr, sidebarBuilder };
   }
 
   private mountMapControls(

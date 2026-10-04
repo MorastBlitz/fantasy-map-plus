@@ -24,6 +24,38 @@ An Obsidian plugin for displaying interactive fantasy campaign maps with markers
   - **Tags** — categorize features; clicking a tag searches your vault
   - **Relations** — connect features to each other with labeled relationships (e.g. "allied with", "trade route to"); displayed as curved arrows on the map.
 
+### Linking from Notes to Maps
+
+Notes can link back to a map or to a specific marker/region:
+
+- Click **Copy link** in a feature's sidebar to copy a Markdown link, then paste it into any note
+- Run **"Fantasy Map: Copy link to current map"** while a map is open to link to the whole map
+- In the editor, run **"Fantasy Map: Insert link to map"** to choose a map (and optionally a feature) and insert the link at the cursor; any selected text becomes the link text
+
+Clicking such a link opens the map, selects the feature and pans to it. Links use the format
+`obsidian://fantasy-map?map=<map>&feature=<feature>`, where `map` and `feature` may be either the
+ID or the name (case-insensitive), so you can also write links by hand, e.g.
+`[The Capital](obsidian://fantasy-map?map=World&feature=Capital)`.
+
+Links come in three styles, chosen in the plugin settings (or asked for each time):
+
+- **Text link** — `[Capital](obsidian://…)`
+- **Text link with icon** — `[📍 Capital](obsidian://…)`
+- **Map preview** — a clickable excerpt of the map with the feature highlighted:
+
+  ````
+  ```fantasy-map
+  map: World
+  feature: Capital
+  height: 250
+  view: full
+  ```
+  ````
+
+  `feature`, `height` and `view` are optional; `view: full` shows the whole map instead of zooming to the feature.
+
+All of these functions are also available from the map icon in the left ribbon.
+
 ### Layers
 
 - Organize features (markers or regions) into named layers

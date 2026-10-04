@@ -66,6 +66,10 @@ export const MapConfigSchema = v.object({
   parentFeatureId: v.optional(v.string()),
 });
 
+export const LinkStyleSchema = v.picklist(["ask", "text", "icon", "preview"]);
+
 export const FantasyMapSettingsSchema = v.object({
   maps: v.array(MapConfigSchema),
+  linkStyle: v.optional(LinkStyleSchema, "ask"),
+  previewHeight: v.optional(v.number(), 300),
 });

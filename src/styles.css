@@ -383,3 +383,51 @@
   opacity: 0.2 !important;
   transition: opacity 150ms ease;
 }
+
+/* ── Map Preview (code block in notes) ────────────────────────── */
+
+.fantasy-map-preview {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--background-secondary);
+}
+
+.fantasy-map-preview:hover,
+.fantasy-map-preview:focus-visible {
+  border-color: var(--interactive-accent);
+}
+
+.fantasy-map-preview-image {
+  display: block;
+  width: 100%;
+}
+
+.fantasy-map-preview-marker {
+  stroke: white;
+}
+
+.fantasy-map-preview-region {
+  fill-opacity: 0.3;
+}
+
+.fantasy-map-preview-caption {
+  display: flex;
+  align-items: center;
+  gap: var(--size-2-3);
+  padding: var(--size-4-1) var(--size-4-2);
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+}
+
+.fantasy-map-preview-caption .svg-icon {
+  width: var(--icon-s);
+  height: var(--icon-s);
+}
+
+.fantasy-map-suggest-hint {
+  color: var(--text-muted);
+}

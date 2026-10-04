@@ -89,25 +89,10 @@ export class SidebarStateBuilder {
         this.featureCtrl.removeRelation(props, layer, targetFeatureId);
       },
       onSelectFeature: (featureId: string) => {
-        const found = findFeatureById(this.ctx.layers, featureId);
-        if (!found) return;
-        const featureType =
-          found.feature.geometry.type === "Point" ? "marker" : "polygon";
-        const state = this.build(
-          featureType,
-          found.feature.properties,
-          found.feature,
-          found.layer,
-        );
-        const leafletLayer = findLeafletLayerById(this.ctx.layers, featureId);
-        this.ctx.selectFeature(state, leafletLayer);
-        if (leafletLayer) {
-          const center =
-            leafletLayer instanceof L.Marker
-              ? leafletLayer.getLatLng()
-              : (leafletLayer as L.Polygon).getBounds().getCenter();
-          this.ctx.map.panTo(center);
-        }
+        this.selectById(featureId);
+      },
+      onCopyLink: () => {
+        this.ctx.plugin.copyLink(props.name, this.ctx.mapId, props.id);
       },
       onOpenLocalMap: props.localMapId
         ? () => void this.ctx.plugin.openMap(props.localMapId!)
@@ -118,6 +103,28 @@ export class SidebarStateBuilder {
           }
         : undefined,
     };
+  }
+
+  selectById(featureId: string): void {
+    const found = findFeatureById(this.ctx.layers, featureId);
+    if (!found) return;
+    const featureType =
+      found.feature.geometry.type === "Point" ? "marker" : "polygon";
+    const state = this.build(
+      featureType,
+      found.feature.properties,
+      found.feature,
+      found.layer,
+    );
+    const leafletLayer = findLeafletLayerById(this.ctx.layers, featureId);
+    this.ctx.selectFeature(state, leafletLayer);
+    if (leafletLayer) {
+      const center =
+        leafletLayer instanceof L.Marker
+          ? leafletLayer.getLatLng()
+          : (leafletLayer as L.Polygon).getBounds().getCenter();
+      this.ctx.map.panTo(center);
+    }
   }
 
   createInteractiveMarker(

@@ -9,3 +9,4 @@ export { LinkLocalMapModal } from "./LinkLocalMapModal";
 export { NameInputModal } from "./NameInputModal";
 export { RelationLabelModal } from "./RelationLabelModal";
 export { ManageLayersModal } from "./ManageLayersModal";
+export { LinkStyleModal } from "./LinkStyleModal";
