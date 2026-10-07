@@ -17,3 +17,5 @@ node_modules/
 # npm/pnpm debug logs
 npm-debug.log*
 pnpm-debug.log*
+
+.history

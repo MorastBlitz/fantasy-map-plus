@@ -25,6 +25,7 @@ import {
   resolveMap,
 } from "./links";
 import type { ResolvedLinkStyle } from "./links";
+import { mapLinkClickHandler } from "./editorLinks";
 import { registerMapPreview } from "./preview";
 import { FantasyMapSettingTab } from "./settings";
 
@@ -94,6 +95,11 @@ export default class FantasyMapPlugin extends Plugin {
     this.registerObsidianProtocolHandler(PROTOCOL_ACTION, (params) => {
       this.handleProtocolLink(params);
     });
+    this.registerEditorExtension(
+      mapLinkClickHandler(this.app, (params) => {
+        this.handleProtocolLink(params);
+      }),
+    );
 
     this.registerEvent(
       this.app.vault.on("rename", (file, oldPath) => {
